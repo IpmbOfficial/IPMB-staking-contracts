@@ -9,7 +9,7 @@ This repo provides information regards to the Price Feed and Staking smart contr
 
 *Price Feed Contract - v2.2:* [0xB2F7243b6C5f3A3660941BB77bf82D274E664587](https://www.oklink.com/amoy/address/0xB2F7243b6C5f3A3660941BB77bf82D274E664587)
 
-*IPMB Staking Contract - v2.3:* [0xc0028bEc0A994d5D4e854b7003560063E35860fE](https://www.oklink.com/amoy/address/0xc0028bEc0A994d5D4e854b7003560063E35860fE)
+*IPMB Staking Contract - v2.4:* [0x040D4C7a89B1835ed544150626842A96437Bb3E4](https://www.oklink.com/amoy/address/0x040D4C7a89B1835ed544150626842A96437Bb3E4)
 
 ## Tests
 
