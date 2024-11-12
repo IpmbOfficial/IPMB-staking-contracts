@@ -3,8 +3,8 @@
 /**
  *
  *  @title: IPMB Staking Pools
- *  @date: 07-November-2024
- *  @version: 2.3
+ *  @date: 12-November-2024
+ *  @version: 2.4
  *  @author: IPMB Dev Team
  */
 
@@ -76,6 +76,7 @@ contract IPMBStaking is Ownable {
     // events
 
     event poolRegistration(uint256 indexed poolId);
+    event poolUpdate(uint256 indexed poolId);
     event poolDeposit(uint256 indexed poolId, address indexed addr, uint256 indexed index, uint256 amount);
     event poolWithdrawal(uint256 indexed poolId, address indexed addr, uint256 indexed index, uint256 amount);
     event blacklistWithdrawal(uint256 indexed poolId, address indexed addr, uint256 indexed index, uint256 amount);
@@ -170,6 +171,7 @@ contract IPMBStaking is Ownable {
     function updatePoolData(uint256 _poolID, uint256 _poolMax, bool status) public onlyAdmin {
         poolsRegistry[_poolID].poolMax = _poolMax;
         poolsRegistry[_poolID].status = status;
+        emit poolUpdate(_poolID);
     }
 
     // function to update address pool details after nft minting
