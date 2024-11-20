@@ -3,8 +3,8 @@
 /**
  *
  *  @title: IPMB Staking Pools
- *  @date: 12-November-2024
- *  @version: 2.4
+ *  @date: 20-November-2024
+ *  @version: 2.5
  *  @author: IPMB Dev Team
  */
 
@@ -81,6 +81,12 @@ contract IPMBStaking is Ownable {
     event poolWithdrawal(uint256 indexed poolId, address indexed addr, uint256 indexed index, uint256 amount);
     event blacklistWithdrawal(uint256 indexed poolId, address indexed addr, uint256 indexed index, uint256 amount);
     event poolResetAfterMinting(uint256 indexed poolId, address indexed addr, uint256 indexed index);
+    event adminStatus(address indexed addr, bool indexed status);
+    event authorityStatus(address indexed addr, bool indexed status);
+    event blacklistStatus(address indexed addr, bool indexed status);
+    event updateBlackPeriod(uint256 indexed bperiod);
+    event kycStatus(address indexed addr, bool indexed status);
+    
 
     // constructor
 
@@ -186,22 +192,25 @@ contract IPMBStaking is Ownable {
         emit poolResetAfterMinting(_poolID, _address, _index);
     }
 
-    // function to register an admin
+    // function to add/remove an admin
 
     function addAdmin(address _address, bool _status) public onlyOwner {
         admin[_address] = _status;
+        emit adminStatus(_address, _status);
     }
 
-    // function to register an authority
+    // function to add/remove an authority
 
     function addAuthority(address _address, bool _status) public onlyOwner {
         authority[_address] = _status;
+        emit authorityStatus(_address, _status);
     }
 
-    // function to blacklist
+    // function to add/remove a wallet from blacklist
 
     function addBlacklist(address _address, bool _status) public onlyAuthority {
         blacklist[_address] = _status;
+        emit blacklistStatus(_address, _status);
     }
 
     // function to set GEM minting contract
@@ -226,30 +235,33 @@ contract IPMBStaking is Ownable {
 
     function changeBlackPeriod(uint256 _blackPeriod) public onlyAdmin {
         blackPeriod = _blackPeriod;
+        emit updateBlackPeriod(_blackPeriod);
     }
 
     // function to update address kyc status
 
     function updateKYCAddress(address _address, bool _status) public onlyAdmin {
         kycAddress[_address] = _status;
+        emit kycStatus(_address, _status);
     }
 
-    // function to update address kyc status
+    // function to update the min and max % of discounts for pool registration
 
     function updateMinMaxDiscounts(uint256 _min, uint256 _max) public onlyAdmin {
         minDiscount = _min;
         maxDiscount = _max;
     }
 
-    // function to update address kyc status
+    // function to update kyc status for multiple addresses
 
     function updateKYCAddressBatch(address[] memory _address, bool[] memory _status) public onlyAdmin {
         for (uint256 i = 0; i < _address.length; i++) {
             kycAddress[_address[i]] = _status[i];
+            emit kycStatus(_address[i], _status[i]);
         }
     }
 
-    // function to withdrawl blacklist amount
+    // function to withdrawal blacklist amount for a blaclist address
 
     function blacklistAddressWithdrawalPool(address _receiver, address _address, uint256 _poolID, uint256 _index) public onlyOwner {
         require(blacklist[_address] == true, "Address is not blacklisted");
