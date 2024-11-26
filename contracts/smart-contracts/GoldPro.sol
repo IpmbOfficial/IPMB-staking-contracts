@@ -1,14 +1,10 @@
-/**
- *Submitted for verification at polygonscan.com on 2023-08-22
-*/
-
 // SPDX-License-Identifier: MIT
 
 /**
  *
- *  @title: IPMB Token
- *  @date: 22-August-2023 
- *  @version: 0.4
+ *  @title: Gold Pro (GPRO)
+ *  @date: 26-November-2024
+ *  @version: 0.7
  *  @author: IPMB Dev Team
  */
 
@@ -620,17 +616,113 @@ abstract contract ERC20Burnable is Context, ERC20 {
 
 pragma solidity ^0.8.19;
 
-contract IPMBToken is ERC20, Ownable, ERC20Burnable {
+contract GoldPro is ERC20, Ownable, ERC20Burnable {
 
-    constructor(string memory _name, string memory _symbol, uint256 amount) ERC20(_name, _symbol) {
-        uint256 mintedSupply;
-        mintedSupply = amount * 10 ** decimals();
-        _mint(msg.sender, mintedSupply);
+    // variables/mapping declarations
+    uint256 public maxSupply;
+    mapping (address => bool) public admin;
+    mapping (address => bool) public authority;
+    mapping (address => bool) public blackList;
+    mapping (address => bool) public minter;
+    bool public pause;
+
+    // modifiers
+    // admin role
+    modifier onlyAdmin() {
+        require(admin[msg.sender] == true, "Not allowed");
+        _;
     }
 
+    // authority role
+    modifier onlyAuthority() {
+        require(admin[msg.sender] == true || authority[msg.sender] == true, "Not allowed");
+        _;
+    }
+
+    // minter role
+    modifier onlyMinter() {
+        require(admin[msg.sender] == true || minter[msg.sender] == true, "Not allowed");
+        _;
+    }
+
+    // events
+    event blacklist(address indexed addr, bool indexed status);
+    event pauseContract(bool indexed status);
+
+    // constructor 
+    constructor(string memory _name, string memory _symbol, uint256 amount) ERC20(_name, _symbol) {
+        uint256 mintedSupply;
+        mintedSupply = amount;
+        _mint(msg.sender, mintedSupply);
+        admin[msg.sender] = true;
+        maxSupply = 200000000 * 10 ** decimals();
+    }
+
+    // batch transfers
     function batchTransfers(address[] memory _addresses, uint256[] memory _amounts) public {
         for (uint256 i=0; i< _addresses.length; i++) {
             transfer(_addresses[i], _amounts[i]);
         }
+    }
+
+    // add admin
+    function addAdmin(address _address, bool _status) public onlyOwner {
+        admin[_address] = _status;
+    }
+
+    // add minter
+    function addMinter(address _address, bool _status) public onlyAdmin {
+        minter[_address] = _status;
+    }
+
+    // add authority
+    function addAuthority(address _address, bool _status) public onlyAdmin {
+        authority[_address] = _status;
+    }
+
+    // add to blacklist
+    function addBlacklist(address _address, bool _status) public onlyAuthority {
+        blackList[_address] = _status;
+        emit blacklist(_address, _status);
+    }
+
+    // pause contract transfers
+    function pauseStatus(bool _status) public onlyOwner {
+        pause = _status;
+        emit pauseContract(_status);
+    }
+
+    // increase supply up to max 200m
+    function increaseSupply(address _to, uint256 amount) public onlyMinter {
+        require (pause == false, "Contract is paused");
+        uint256 mintedSupply;
+        mintedSupply = amount;
+        require(totalSupply() + mintedSupply <= maxSupply, "Supply can't exceed maxSupply");
+        _mint(_to, mintedSupply);
+    }
+  
+    // withdraw any ERC20 funds sent to the smart contract
+    function withdrawERC20(address _contractAddress, address _to) public onlyOwner {
+        uint amount = IERC20(_contractAddress).balanceOf(address(this));
+        IERC20(_contractAddress).transfer(_to, amount);             
+    }
+
+    // transfer override
+    function transfer(address to, uint256 amount) public virtual override returns (bool) {
+        address owner = _msgSender();
+        require (pause == false, "Contract is paused");
+        require(blackList[owner] == false, "Address is blacklisted");
+        _transfer(owner, to, amount);
+        return true;
+    }
+
+    // transferFrom override
+    function transferFrom(address from, address to, uint256 amount) public virtual override returns (bool) {
+        address spender = _msgSender();
+        require (pause == false, "Contract is paused");
+        require(blackList[from] == false, "Address is blacklisted");
+        _spendAllowance(from, spender, amount);
+        _transfer(from, to, amount);
+        return true;
     }
 }

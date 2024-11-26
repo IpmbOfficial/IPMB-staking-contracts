@@ -2,7 +2,7 @@
 
 /**
  *
- * @title Interface of the IPMB Staking contract
+ * @title Interface of the Staking contract
  */
 
 pragma solidity ^0.8.5;
@@ -19,7 +19,7 @@ interface IStaking {
 
     function poolDataPerAddress(uint256 _poolID, address _address, uint256 _index) external view returns (uint256, uint256, uint256, uint256, uint256);
 
-    function poolIPMBPricePerAddress(uint256 _poolID, address _address, uint256 _index) external view returns (uint256);
+    function poolGPROPricePerAddress(uint256 _poolID, address _address, uint256 _index) external view returns (uint256);
 
     function poolGoldPricePerAddress(uint256 _poolID, address _address, uint256 _index) external view returns (uint256);
 

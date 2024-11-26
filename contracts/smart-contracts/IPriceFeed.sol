@@ -2,7 +2,7 @@
 
 /**
  *
- * @title IPMB and Gold Price Feed Interface
+ * @title Price Feed Interface
  */
 
 pragma solidity ^0.8.5;

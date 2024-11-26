@@ -2,9 +2,9 @@
 
 /**
  *
- *  @title: IPMB Staking Pools
- *  @date: 20-November-2024
- *  @version: 2.5
+ *  @title: Staking Pools
+ *  @date: 26-November-2024
+ *  @version: 2.6
  *  @author: IPMB Dev Team
  */
 
@@ -14,7 +14,7 @@ import "./IPriceFeed.sol";
 
 pragma solidity ^0.8.19;
 
-contract IPMBStaking is Ownable {
+contract GPROStaking is Ownable {
 
     // pool structure
 
@@ -35,7 +35,7 @@ contract IPMBStaking is Ownable {
         uint256 amount;
         uint256 dateDeposit;
         uint256 epoch;
-        uint256 ipmbPrice;
+        uint256 goldProPrice;
         uint256 goldPrice;
     }
 
@@ -54,7 +54,7 @@ contract IPMBStaking is Ownable {
     // variables declaration
 
     uint256 public nextpoolCounter;
-    address public ipmbAddress;
+    address public goldProAddress;
     IPriceFeed public priceFeedAddress;
     address public gemMintingContract;
     uint256 public blackPeriod;
@@ -90,9 +90,9 @@ contract IPMBStaking is Ownable {
 
     // constructor
 
-    constructor (address _ipmbAddress, address _priceFeedAddress, uint256 _blackPeriod) {
+    constructor (address _goldProAddress, address _priceFeedAddress, uint256 _blackPeriod) {
         admin[msg.sender] = true;
-        ipmbAddress = _ipmbAddress;
+        goldProAddress = _goldProAddress;
         nextpoolCounter = 1;
         priceFeedAddress = IPriceFeed(_priceFeedAddress);
         blackPeriod = _blackPeriod;
@@ -125,17 +125,17 @@ contract IPMBStaking is Ownable {
         require(blacklist[msg.sender] == false, "Address is blacklisted");
         require(poolsRegistry[_poolID].status == true, "Pool is inactive");
         require(poolsRegistry[_poolID].poolMax > addressArray[msg.sender][_poolID].length, "Already deposited max times");
-        require(IERC20(ipmbAddress).balanceOf(msg.sender) >= poolsRegistry[_poolID].amount, "Your ERC20 balance is not enough");
-        (uint256 epoch, uint256 ipmbPrice, uint256 goldPrice, , ,) = priceFeedAddress.getLatestPrices();
+        require(IERC20(goldProAddress).balanceOf(msg.sender) >= poolsRegistry[_poolID].amount, "Your ERC20 balance is not enough");
+        (uint256 epoch, uint256 goldProPrice, uint256 goldPrice, , ,) = priceFeedAddress.getLatestPrices();
         uint256 count = addressCounter[msg.sender][_poolID];
         addressDataNew[msg.sender][_poolID][count].amount = poolsRegistry[_poolID].amount;
         addressDataNew[msg.sender][_poolID][count].dateDeposit = block.timestamp;
         addressDataNew[msg.sender][_poolID][count].epoch = epoch;
-        addressDataNew[msg.sender][_poolID][count].ipmbPrice = ipmbPrice;
+        addressDataNew[msg.sender][_poolID][count].goldProPrice = goldProPrice;
         addressDataNew[msg.sender][_poolID][count].goldPrice = goldPrice;
         addressArray[msg.sender][_poolID].push(count);
         addressCounter[msg.sender][_poolID]++;
-        IERC20(ipmbAddress).transferFrom(msg.sender, address(this), poolsRegistry[_poolID].amount);
+        IERC20(goldProAddress).transferFrom(msg.sender, address(this), poolsRegistry[_poolID].amount);
         emit poolDeposit(_poolID, msg.sender, count, poolsRegistry[_poolID].amount);
     }
 
@@ -160,7 +160,7 @@ contract IPMBStaking is Ownable {
         addressDataNew[msg.sender][_poolID][_index].amount = 0;
         addressDataNew[msg.sender][_poolID][_index].dateDeposit = 0;
         addressDataNew[msg.sender][_poolID][_index].epoch = 0;
-        addressDataNew[msg.sender][_poolID][_index].ipmbPrice = 0;
+        addressDataNew[msg.sender][_poolID][_index].goldProPrice = 0;
         addressDataNew[msg.sender][_poolID][_index].goldPrice = 0;
         for (uint256 i = 0; i < addressArray[msg.sender][_poolID].length; i++) {
             if (_index == addressArray[msg.sender][_poolID][i]) {
@@ -168,7 +168,7 @@ contract IPMBStaking is Ownable {
                 addressArray[msg.sender][_poolID].pop();
             }
         }
-        IERC20(ipmbAddress).transfer(msg.sender, amount);
+        IERC20(goldProAddress).transfer(msg.sender, amount);
         emit poolWithdrawal(_poolID, msg.sender, _index, amount);
     }
 
@@ -187,7 +187,7 @@ contract IPMBStaking is Ownable {
         addressDataNew[_address][_poolID][_index].amount = 0;
         addressDataNew[_address][_poolID][_index].dateDeposit = 0;
         addressDataNew[_address][_poolID][_index].epoch = 0;
-        addressDataNew[_address][_poolID][_index].ipmbPrice = 0;
+        addressDataNew[_address][_poolID][_index].goldProPrice = 0;
         addressDataNew[_address][_poolID][_index].goldPrice = 0;
         emit poolResetAfterMinting(_poolID, _address, _index);
     }
@@ -228,7 +228,7 @@ contract IPMBStaking is Ownable {
     // function to approve GEM minting contract
 
     function approveGEMMintingContract(uint256 _amount) public onlyAdmin {
-        IERC20(ipmbAddress).approve(gemMintingContract, _amount);
+        IERC20(goldProAddress).approve(gemMintingContract, _amount);
     }
 
     // function to modify the time that the blacklist funds can be withdrawl
@@ -271,9 +271,9 @@ contract IPMBStaking is Ownable {
         addressDataNew[_address][_poolID][_index].amount = 0;
         addressDataNew[_address][_poolID][_index].dateDeposit = 0;
         addressDataNew[_address][_poolID][_index].epoch = 0;
-        addressDataNew[_address][_poolID][_index].ipmbPrice = 0;
+        addressDataNew[_address][_poolID][_index].goldProPrice = 0;
         addressDataNew[_address][_poolID][_index].goldPrice = 0;
-        IERC20(ipmbAddress).transfer(_receiver, amount);
+        IERC20(goldProAddress).transfer(_receiver, amount);
         emit blacklistWithdrawal(_poolID, _address, _index, amount);
     }
 
@@ -320,7 +320,7 @@ contract IPMBStaking is Ownable {
     // retrieve deposit amount
 
     function poolDataPerAddress(uint256 _poolID, address _address, uint256 _index) public view returns (uint256, uint256, uint256, uint256, uint256) {
-        return (addressDataNew[_address][_poolID][_index].amount, addressDataNew[_address][_poolID][_index].dateDeposit, addressDataNew[_address][_poolID][_index].epoch, addressDataNew[_address][_poolID][_index].ipmbPrice, addressDataNew[_address][_poolID][_index].goldPrice);
+        return (addressDataNew[_address][_poolID][_index].amount, addressDataNew[_address][_poolID][_index].dateDeposit, addressDataNew[_address][_poolID][_index].epoch, addressDataNew[_address][_poolID][_index].goldProPrice, addressDataNew[_address][_poolID][_index].goldPrice);
     }
 
     // retrieve deposit date
@@ -329,10 +329,10 @@ contract IPMBStaking is Ownable {
         return (addressDataNew[_address][_poolID][_index].dateDeposit);
     }
 
-    // retrieve ipmb price at pool deposit
+    // retrieve goldPro price at pool deposit
 
-    function poolIPMBPricePerAddress(uint256 _poolID, address _address, uint256 _index) public view returns (uint256) {
-        return (addressDataNew[_address][_poolID][_index].ipmbPrice);
+    function poolGPROPricePerAddress(uint256 _poolID, address _address, uint256 _index) public view returns (uint256) {
+        return (addressDataNew[_address][_poolID][_index].goldProPrice);
     }
 
     // retrieve gold price at pool deposit

@@ -7,7 +7,7 @@ const fixturesDeployment = require("../scripts/fixturesDeployment.js")
 let signers
 let contracts
 
-describe("IPMB Staking tests", function () {
+describe("Staking tests", function () {
   before(async function () {
     ;({ signers, contracts } = await loadFixture(fixturesDeployment))
   })
@@ -17,10 +17,10 @@ describe("IPMB Staking tests", function () {
       expect(await contracts.hhPriceFeed.getAddress()).to.not.equal(
         ethers.ZeroAddress,
       )
-      expect(await contracts.hhIPMB.getAddress()).to.not.equal(
+      expect(await contracts.hhGoldPro.getAddress()).to.not.equal(
         ethers.ZeroAddress,
       )
-      expect(await contracts.hhIPMBStaking.getAddress()).to.not.equal(
+      expect(await contracts.hhGPROStaking.getAddress()).to.not.equal(
         ethers.ZeroAddress,
       )
     })
@@ -30,11 +30,11 @@ describe("IPMB Staking tests", function () {
     
     // register a pool
     it("#registerPool", async function () {
-      await contracts.hhIPMBStaking.registerPool(
+      await contracts.hhGPROStaking.registerPool(
         "Gem1-3M-2%", // _poolName
         600, // _duration
         2,// _discount
-        BigInt(1000000000000000000), // _amount 1 IPMB
+        BigInt(1000000000000000000), // _amount 1 GPRO
         300, // _lockDuration
         5, // _poolMax
       )
@@ -42,7 +42,7 @@ describe("IPMB Staking tests", function () {
 
     // check the status of a ppol
     it("#checkPoolStatus", async function () {
-      const status = await contracts.hhIPMBStaking.poolStatus(
+      const status = await contracts.hhGPROStaking.poolStatus(
         1
       )
       expect(status).equal(true); 
@@ -54,7 +54,7 @@ describe("IPMB Staking tests", function () {
 
     // add Address to KYC
     it("#addKYC", async function () {
-      await contracts.hhIPMBStaking.updateKYCAddress(
+      await contracts.hhGPROStaking.updateKYCAddress(
         signers.owner.address,
         true
       )
@@ -62,15 +62,15 @@ describe("IPMB Staking tests", function () {
 
     // approve tokens
     it("#approveTokens", async function () {
-      await contracts.hhIPMB.approve(
-        contracts.hhIPMBStaking,
-        BigInt(100000000000000000000) // 100 IPMB
+      await contracts.hhGoldPro.approve(
+        contracts.hhGPROStaking,
+        BigInt(100000000000000000000) // 100 GPRO
       )
     })
 
     // deposit to pool
     it("#depositPool", async function () {
-      await contracts.hhIPMBStaking.depositPool(
+      await contracts.hhGPROStaking.depositPool(
         1
       )
     })
@@ -80,7 +80,7 @@ describe("IPMB Staking tests", function () {
   context("Check Deposit", () => {
 
     it("#poolAmount", async function () {
-      const amount = await contracts.hhIPMBStaking.poolAmountPerAddress(
+      const amount = await contracts.hhGPROStaking.poolAmountPerAddress(
         1, // _poolId
         signers.owner.address, // _address
         0 // _index
@@ -93,7 +93,7 @@ describe("IPMB Staking tests", function () {
   context("Check Lockdown Period", () => {
 
     it("#lockDown", async function () {
-      expect(contracts.hhIPMBStaking.withdrawalPool(
+      expect(contracts.hhGPROStaking.withdrawalPool(
         1, // _poolId
         0 // _index
       )).to.be.revertedWith("Time has not passed"); //
@@ -105,7 +105,7 @@ describe("IPMB Staking tests", function () {
 
     it("#discount", async function () {
       await time.increase(605);
-      expect(await contracts.hhIPMBStaking.getDiscount(
+      expect(await contracts.hhGPROStaking.getDiscount(
         1, // _poolId
         signers.owner.address, // _address
         0, // _index
@@ -117,19 +117,19 @@ describe("IPMB Staking tests", function () {
   context("Deposits and Withdrawal", () => {
 
     it("#depositPool", async function () {
-      await contracts.hhIPMBStaking.depositPool(
+      await contracts.hhGPROStaking.depositPool(
         1
       )
     })
 
     it("#depositPool", async function () {
-      await contracts.hhIPMBStaking.depositPool(
+      await contracts.hhGPROStaking.depositPool(
         1
       )
     })
 
     it("#poolAmount", async function () {
-      const amount = await contracts.hhIPMBStaking.poolAmountPerAddress(
+      const amount = await contracts.hhGPROStaking.poolAmountPerAddress(
         1, // _poolId
         signers.owner.address, // _address
         1 // _index
@@ -139,7 +139,7 @@ describe("IPMB Staking tests", function () {
 
     it("#withdrawalPool", async function () {
       await time.increase(310);
-      await contracts.hhIPMBStaking.withdrawalPool(
+      await contracts.hhGPROStaking.withdrawalPool(
         1, // _poolId
         1, // _index
       )
@@ -150,20 +150,20 @@ describe("IPMB Staking tests", function () {
   context("Check Blacklist", () => {
 
     it("#blackListWallet", async function () {
-      await contracts.hhIPMBStaking.addBlacklist(
+      await contracts.hhGPROStaking.addBlacklist(
         signers.owner.address, // _address
         1, // _status
       )
     })
 
     it("#depositBlocked", async function () {
-      expect(contracts.hhIPMBStaking.depositPool(
+      expect(contracts.hhGPROStaking.depositPool(
         1, // _poolId
       )).to.be.revertedWith("Address is blacklisted"); //
     })
 
     it("#withdrawalBlocked", async function () {
-      expect(contracts.hhIPMBStaking.withdrawalPool(
+      expect(contracts.hhGPROStaking.withdrawalPool(
         1, // _poolId
         0 // _index
       )).to.be.revertedWith("Address is blacklisted"); //
@@ -175,7 +175,7 @@ describe("IPMB Staking tests", function () {
 
     it("#blacklistAddressWithdrawalPool", async function () {
       await time.increase(610);
-      await contracts.hhIPMBStaking.blacklistAddressWithdrawalPool(
+      await contracts.hhGPROStaking.blacklistAddressWithdrawalPool(
         signers.addr1.address, // _receiver
         signers.owner.address, // _address
         1, // _poolID
@@ -185,7 +185,7 @@ describe("IPMB Staking tests", function () {
 
     it("#blacklistAddressWithdrawalPool", async function () {
       await time.increase(610);
-      await contracts.hhIPMBStaking.blacklistAddressWithdrawalPool(
+      await contracts.hhGPROStaking.blacklistAddressWithdrawalPool(
         signers.addr1.address, // _receiver
         signers.owner.address, // _address
         1, // _poolID
@@ -194,7 +194,7 @@ describe("IPMB Staking tests", function () {
     })
 
     it("#receiverBalance", async function () {
-      const balance = await contracts.hhIPMB.balanceOf(signers.addr1.address)
+      const balance = await contracts.hhGoldPro.balanceOf(signers.addr1.address)
       expect(balance).to.equal(BigInt(2000000000000000000)); // if other fails
     })
 
@@ -203,27 +203,27 @@ describe("IPMB Staking tests", function () {
   context("Transfer Tokens and Add KYC to Address 2", () => {
 
     it("#transferTokens", async function () {
-      await contracts.hhIPMB.transfer(
+      await contracts.hhGoldPro.transfer(
         signers.addr2.address, // _receiver
         BigInt(10000000000000000000), // _amount
       )
     })
 
     it("#receiverBalance", async function () {
-      const balance = await contracts.hhIPMB.balanceOf(signers.addr2.address)
+      const balance = await contracts.hhGoldPro.balanceOf(signers.addr2.address)
       expect(balance).to.equal(BigInt(10000000000000000000)); // if other fails
     })
 
     // approve tokens
     it("#approveTokens", async function () {
-      await contracts.hhIPMB.connect(signers.addr2).approve(
-        contracts.hhIPMBStaking,
-        BigInt(100000000000000000000) // 100 IPMB
+      await contracts.hhGoldPro.connect(signers.addr2).approve(
+        contracts.hhGPROStaking,
+        BigInt(100000000000000000000) // 100 GPRO
       )
     })
 
     it("#addKYC", async function () {
-      await contracts.hhIPMBStaking.updateKYCAddress(
+      await contracts.hhGPROStaking.updateKYCAddress(
         signers.addr2.address,
         true
       )
@@ -234,8 +234,8 @@ describe("IPMB Staking tests", function () {
   context("Change Epoch", () => {
 
     it("#checkData of epoch 0", async function () {
-      const [, ipmb, gold, golddaily, ,] = await contracts.hhPriceFeed.getLatestPrices()
-      expect(ipmb).to.equal("80"); // if other fails
+      const [, gpro, gold, golddaily, ,] = await contracts.hhPriceFeed.getLatestPrices()
+      expect(gpro).to.equal("80"); // if other fails
       expect(gold).to.equal("80"); // if other fails
       expect(golddaily).to.equal("100"); // if other fails
     })
@@ -243,19 +243,19 @@ describe("IPMB Staking tests", function () {
     it("#addEpoch", async function () {
       await time.increase(110);
       await contracts.hhPriceFeed.setData(
-        100, // _ipmb
+        100, // _goldPro
         100, // _gold
         120, // _goldDaily
-        "0xe2f2af72d4dc39d12179077867ef9d726b5b8430acd5357fa00503c0e56bd69f", // _epochIPMBDataSetHash
+        "0xe2f2af72d4dc39d12179077867ef9d726b5b8430acd5357fa00503c0e56bd69f", // _epochGoldProDataSetHash
         "0x070b4e17a7a1f2158be12744e9f839c622931c6df32aa8342a66f7710e4a1c14", // _epochGoldDataSetHash
       )
     })
 
     it("#checkData of epoch 1", async function () {
-      const [ipmb, gold, golddaily, ,] = await contracts.hhPriceFeed.getEpochPrices(
+      const [gpro, gold, golddaily, ,] = await contracts.hhPriceFeed.getEpochPrices(
         1 // _epoch
       )
-      expect(ipmb).to.equal("100"); // if other fails
+      expect(gpro).to.equal("100"); // if other fails
       expect(gold).to.equal("100"); // if other fails
       expect(golddaily).to.equal("120"); // if other fails
     })
@@ -264,19 +264,19 @@ describe("IPMB Staking tests", function () {
 
   context("Check Dataset Hashes", () => {
 
-    it("#checkIPMBHases 0 epoch", async function () {
-      const [ipmb, gold] = await contracts.hhPriceFeed.getEpochDataSetHash(
+    it("#checkHashes 0 epoch", async function () {
+      const [gpro, gold] = await contracts.hhPriceFeed.getEpochDataSetHash(
         0 // _epoch
       )
-      expect(ipmb).to.equal("0x4df817a31b2b68719ac77978bef933d23d0daeacaba2e1d7d501635ef3f32580"); // if other fails
+      expect(gpro).to.equal("0x4df817a31b2b68719ac77978bef933d23d0daeacaba2e1d7d501635ef3f32580"); // if other fails
       expect(gold).to.equal("0x37be355583a126f6df64b523391a3adae33d27c6323930461f04b72db0700c2b"); // if other fails
     })
 
-    it("#checkIPMBHases 1 epoch", async function () {
-      const [ipmb, gold] = await contracts.hhPriceFeed.getEpochDataSetHash(
+    it("#checkHashes 1 epoch", async function () {
+      const [gpro, gold] = await contracts.hhPriceFeed.getEpochDataSetHash(
         1 // _epoch
       )
-      expect(ipmb).to.equal("0xe2f2af72d4dc39d12179077867ef9d726b5b8430acd5357fa00503c0e56bd69f"); // if other fails
+      expect(gpro).to.equal("0xe2f2af72d4dc39d12179077867ef9d726b5b8430acd5357fa00503c0e56bd69f"); // if other fails
       expect(gold).to.equal("0x070b4e17a7a1f2158be12744e9f839c622931c6df32aa8342a66f7710e4a1c14"); // if other fails
     })
 
@@ -286,13 +286,13 @@ describe("IPMB Staking tests", function () {
 
     // deposit to pool
     it("#depositPool", async function () {
-      await contracts.hhIPMBStaking.connect(signers.addr2).depositPool(
+      await contracts.hhGPROStaking.connect(signers.addr2).depositPool(
         1
       )
     })
 
     it("#checkDepositEpoch", async function () {
-      const epoch = await contracts.hhIPMBStaking.poolEpochPerAddress(
+      const epoch = await contracts.hhGPROStaking.poolEpochPerAddress(
         1, // _poolID
         signers.addr2.address, // _address
         0, // _index
@@ -306,7 +306,7 @@ describe("IPMB Staking tests", function () {
 
     it("#discount", async function () {
       await time.increase(605);
-      expect(await contracts.hhIPMBStaking.getDiscount(
+      expect(await contracts.hhGPROStaking.getDiscount(
         1, // _poolId
         signers.addr2.address, // _address
         0, // _index
@@ -319,11 +319,11 @@ describe("IPMB Staking tests", function () {
 
     // register a pool
     it("#registerPool", async function () {
-      await contracts.hhIPMBStaking.registerPool(
+      await contracts.hhGPROStaking.registerPool(
         "Gem2.5-12M-11%", // _poolName
         1200, // _duration
         11,// _discount
-        BigInt(2500000000000000000), // _amount 1 IPMB
+        BigInt(2500000000000000000), // _amount 1 GPRO
         600, // _lockDuration
         4, // _poolMax
       )
@@ -335,13 +335,13 @@ describe("IPMB Staking tests", function () {
 
     // deposit to pool
     it("#depositPool", async function () {
-      await contracts.hhIPMBStaking.connect(signers.addr2).depositPool(
+      await contracts.hhGPROStaking.connect(signers.addr2).depositPool(
         2
       )
     })
 
     it("#checkDepositEpoch", async function () {
-      const epoch = await contracts.hhIPMBStaking.poolAmountPerAddress(
+      const epoch = await contracts.hhGPROStaking.poolAmountPerAddress(
         2, // _poolID
         signers.addr2.address, // _address
         0, // _index
@@ -355,7 +355,7 @@ describe("IPMB Staking tests", function () {
 
     it("#discount", async function () {
       await time.increase(1250);
-      expect(await contracts.hhIPMBStaking.getDiscount(
+      expect(await contracts.hhGPROStaking.getDiscount(
         2, // _poolId
         signers.addr2.address, // _address
         0, // _index
@@ -368,14 +368,14 @@ describe("IPMB Staking tests", function () {
 
     // deposit to pool
     it("#depositPool", async function () {
-      await contracts.hhIPMBStaking.connect(signers.addr2).depositPool(
+      await contracts.hhGPROStaking.connect(signers.addr2).depositPool(
         2
       )
     })
 
     // reverted as pool max reached
     it("#poolMaxdeposit", async function () {
-      expect(contracts.hhIPMBStaking.connect(signers.addr2).depositPool(
+      expect(contracts.hhGPROStaking.connect(signers.addr2).depositPool(
         2
       )).to.be.revertedWith("Already deposited max times");
     })
@@ -386,7 +386,7 @@ describe("IPMB Staking tests", function () {
 
     it("#withdrawalPool", async function () {
       await time.increase(610);
-      await contracts.hhIPMBStaking.connect(signers.addr2).withdrawalPool(
+      await contracts.hhGPROStaking.connect(signers.addr2).withdrawalPool(
         2, // _poolId
         1, // _index
       )
@@ -394,13 +394,13 @@ describe("IPMB Staking tests", function () {
 
     // deposit to pool
     it("#depositPool", async function () {
-      await contracts.hhIPMBStaking.connect(signers.addr2).depositPool(
+      await contracts.hhGPROStaking.connect(signers.addr2).depositPool(
         2
       )
     })
 
     it("#checkDepositEpoch", async function () {
-      const epoch = await contracts.hhIPMBStaking.poolAmountPerAddress(
+      const epoch = await contracts.hhGPROStaking.poolAmountPerAddress(
         2, // _poolID
         signers.addr2.address, // _address
         2, // _index
@@ -414,7 +414,7 @@ describe("IPMB Staking tests", function () {
 
     it("#discount", async function () {
       await time.increase(1250);
-      expect(await contracts.hhIPMBStaking.getDiscount(
+      expect(await contracts.hhGPROStaking.getDiscount(
         2, // _poolId
         signers.addr2.address, // _address
         2, // _index
@@ -427,7 +427,7 @@ describe("IPMB Staking tests", function () {
 
     // transfer tokens to address 3
     it("#transferTokens", async function () {
-      await contracts.hhIPMB.transfer(
+      await contracts.hhGoldPro.transfer(
         signers.addr3.address, // _receiver
         BigInt(10000000000000000000), // _amount
       )
@@ -435,7 +435,7 @@ describe("IPMB Staking tests", function () {
 
     // add Address 3 to KYC
     it("#addKYC", async function () {
-      await contracts.hhIPMBStaking.updateKYCAddress(
+      await contracts.hhGPROStaking.updateKYCAddress(
         signers.addr3.address,
         true
       )
@@ -443,22 +443,22 @@ describe("IPMB Staking tests", function () {
 
     // approve tokens as address 3
     it("#approveTokens", async function () {
-      await contracts.hhIPMB.connect(signers.addr3).approve(
-        contracts.hhIPMBStaking,
-        BigInt(10000000000000000000) // 10 IPMB
+      await contracts.hhGoldPro.connect(signers.addr3).approve(
+        contracts.hhGPROStaking,
+        BigInt(10000000000000000000) // 10 GPRO
       )
     })
 
     // deposit to pool 1 as address 3
     it("#depositPool", async function () {
-      await contracts.hhIPMBStaking.connect(signers.addr3).depositPool(
+      await contracts.hhGPROStaking.connect(signers.addr3).depositPool(
         1
       )
     })
 
     // blacklist address 3
     it("#blackListWallet", async function () {
-      await contracts.hhIPMBStaking.addBlacklist(
+      await contracts.hhGPROStaking.addBlacklist(
         signers.addr3.address, // _address
         1, // _status
       )
@@ -467,7 +467,7 @@ describe("IPMB Staking tests", function () {
     // withdrawal pool
     it("#withdrawalPool", async function () {
       await time.increase(310);
-      expect(contracts.hhIPMBStaking.withdrawalPool(
+      expect(contracts.hhGPROStaking.withdrawalPool(
         1, // _poolId
         0, // _index
       )).to.be.revertedWith("Address is blacklisted");
@@ -475,14 +475,14 @@ describe("IPMB Staking tests", function () {
 
     // deposit blocked due to blacklist
     it("#depositBlockedBlacklist", async function () {
-      expect(contracts.hhIPMBStaking.connect(signers.addr3).depositPool(
+      expect(contracts.hhGPROStaking.connect(signers.addr3).depositPool(
         1, // _poolId
       )).to.be.revertedWith("Address is blacklisted"); //
     })
 
     // remove from blacklist address 3
     it("#blackListWallet", async function () {
-      await contracts.hhIPMBStaking.addBlacklist(
+      await contracts.hhGPROStaking.addBlacklist(
         signers.addr3.address, // _address
         0, // _status
       )
@@ -490,7 +490,7 @@ describe("IPMB Staking tests", function () {
 
     // remove KYC status of Address 3
     it("#removeKYC", async function () {
-      await contracts.hhIPMBStaking.updateKYCAddress(
+      await contracts.hhGPROStaking.updateKYCAddress(
         signers.addr3.address,
         false
       )
@@ -498,14 +498,14 @@ describe("IPMB Staking tests", function () {
 
     // deposit blocked due to KYC
     it("#depositBlockedKYC", async function () {
-      expect(contracts.hhIPMBStaking.connect(signers.addr3).depositPool(
+      expect(contracts.hhGPROStaking.connect(signers.addr3).depositPool(
         1, // _poolId
       )).to.be.revertedWith("No KYC"); //
     })
 
     // add Address 3 to KYC
     it("#addKYC", async function () {
-      await contracts.hhIPMBStaking.updateKYCAddress(
+      await contracts.hhGPROStaking.updateKYCAddress(
         signers.addr3.address,
         true
       )
@@ -513,14 +513,14 @@ describe("IPMB Staking tests", function () {
 
     // deposit to pool 1 as address 3 (2nd deposit)
     it("#depositPool", async function () {
-      await contracts.hhIPMBStaking.connect(signers.addr3).depositPool(
+      await contracts.hhGPROStaking.connect(signers.addr3).depositPool(
         1
       )
     })
 
     // deposit to pool 2 as address 3 (1st deposit)
     it("#depositPool", async function () {
-      await contracts.hhIPMBStaking.connect(signers.addr3).depositPool(
+      await contracts.hhGPROStaking.connect(signers.addr3).depositPool(
         2
       )
     })
@@ -528,7 +528,7 @@ describe("IPMB Staking tests", function () {
     // withdrawal 1st deposit
     it("#withdrawalPool", async function () {
       await time.increase(610);
-      await contracts.hhIPMBStaking.connect(signers.addr3).withdrawalPool(
+      await contracts.hhGPROStaking.connect(signers.addr3).withdrawalPool(
         1, // _poolId
         0, // _index
       )
@@ -537,7 +537,7 @@ describe("IPMB Staking tests", function () {
     // check discount of 1st deposit (pool 1) --> 0% as it was withdrew
     it("#discount", async function () {
       await time.increase(1250);
-      expect(await contracts.hhIPMBStaking.getDiscount(
+      expect(await contracts.hhGPROStaking.getDiscount(
         1, // _poolId
         signers.addr3.address, // _address
         0, // _index
@@ -547,7 +547,7 @@ describe("IPMB Staking tests", function () {
     // check discount of 2nd deposit (pool 1) --> 2%
     it("#discount", async function () {
       await time.increase(1250);
-      expect(await contracts.hhIPMBStaking.getDiscount(
+      expect(await contracts.hhGPROStaking.getDiscount(
         1, // _poolId
         signers.addr3.address, // _address
         1, // _index
@@ -557,7 +557,7 @@ describe("IPMB Staking tests", function () {
     // check discount of 1st deposit (pool 2) --> 2%
     it("#discount", async function () {
       await time.increase(1250);
-      expect(await contracts.hhIPMBStaking.getDiscount(
+      expect(await contracts.hhGPROStaking.getDiscount(
         2, // _poolId
         signers.addr3.address, // _address
         0, // _index
@@ -570,7 +570,7 @@ describe("IPMB Staking tests", function () {
 
     // remove blacklist
     it("#blackListWallet", async function () {
-      await contracts.hhIPMBStaking.addBlacklist(
+      await contracts.hhGPROStaking.addBlacklist(
         signers.owner.address, // _address
         0, // _status
       )
@@ -578,7 +578,7 @@ describe("IPMB Staking tests", function () {
 
     // multi deposits
     it("#multiDepositPool", async function () {
-      await contracts.hhIPMBStaking.multiDepositPool(
+      await contracts.hhGPROStaking.multiDepositPool(
         [1,2], // _poolIDs
         [1,4], // _quantity
       )
@@ -586,7 +586,7 @@ describe("IPMB Staking tests", function () {
 
     it("#withdrawalPool", async function () {
       await time.increase(600);
-      await contracts.hhIPMBStaking.withdrawalPool(
+      await contracts.hhGPROStaking.withdrawalPool(
         2, // _poolId
         3, // _index
       )
@@ -594,13 +594,13 @@ describe("IPMB Staking tests", function () {
 
     // single deposit
     it("#singleDeposit", async function () {
-      await contracts.hhIPMBStaking.depositPool(
+      await contracts.hhGPROStaking.depositPool(
         2, // _poolID
       )
     })
 
     it("#poolAmount", async function () {
-      const amount = await contracts.hhIPMBStaking.poolAmountPerAddress(
+      const amount = await contracts.hhGPROStaking.poolAmountPerAddress(
         2, // _poolId
         signers.owner.address, // _address
         4 // _index
