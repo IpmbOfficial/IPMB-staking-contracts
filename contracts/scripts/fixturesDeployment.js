@@ -8,17 +8,17 @@ const fixturesDeployment = async () => {
   const addr2 = signersList[2]
   const addr3 = signersList[3]
 
-  const ipmb = await ethers.getContractFactory(
-    "IPMBToken",
+  const goldpro = await ethers.getContractFactory(
+    "GoldPro"
   )
-  const hhIPMB = await ipmb.deploy(
-    "IPMB",
-    "IPMB",
-    200000000
+  const hhGoldPro = await goldpro.deploy(
+    "GoldPro",
+    "GPRO",
+    BigInt(200000000000000000000000000)
   )
 
   const priceFeed = await ethers.getContractFactory(
-    "PriceFeed",
+    "PriceFeed"
   )
   const hhPriceFeed = await priceFeed.deploy(
     80,
@@ -29,19 +29,19 @@ const fixturesDeployment = async () => {
     100
   )
 
-  const ipmbStaking = await ethers.getContractFactory(
-    "IPMBStaking",
+  const gproStaking = await ethers.getContractFactory(
+    "GPROStaking"
   )
-  const hhIPMBStaking = await ipmbStaking.deploy(
-    await hhIPMB.getAddress(),
+  const hhGPROStaking = await gproStaking.deploy(
+    await hhGoldPro.getAddress(),
     await hhPriceFeed.getAddress(),
     600
   )
 
   const contracts = {
     hhPriceFeed: hhPriceFeed,
-    hhIPMB: hhIPMB,
-    hhIPMBStaking: hhIPMBStaking
+    hhGoldPro: hhGoldPro,
+    hhGPROStaking: hhGPROStaking
   }
 
   const signers = {
