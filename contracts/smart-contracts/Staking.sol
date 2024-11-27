@@ -353,7 +353,7 @@ contract GPROStaking is Ownable {
         return (kycAddress[_address]);
     }
 
-    // retrieve the deposit indeces per address per pool
+    // retrieve the deposit indices per address per pool
 
     function retrieveAddressArrayPool(address _address, uint256 _pool) public view returns (uint256[] memory) {
         return (addressArray[_address][_pool]);
