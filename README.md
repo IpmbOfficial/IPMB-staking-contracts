@@ -91,10 +91,24 @@ This repository contains the Solidity smart contract **GPROStaking**, developed 
 
 ## Usage
 
+##Naming scheme for the pools
+
+```solidity
+GEM<category>-<duration>-<discount%>-<round> e.g., GEM1-3M-2%-1
+```
+
 ### Example Commands
 #### Register a Pool
 ```solidity
-registerPool("Pool1", 30 days, 5, 1000 ether, 10 days, 3);
+
+0	_poolName	string	GEM1-3M-2%-1
+1	_duration	uint256	7884000
+2	_discount	uint256	2
+3	_amount	uint256	1000000000000000000
+4	_lockDuration	uint256	1209600
+5	_poolMax	uint256	25
+
+registerPool("GEM1-3M-2%-1", 7884000, 2, 1000000000000000000, 1209600, 25);
 ```
 
 #### Stake Tokens
