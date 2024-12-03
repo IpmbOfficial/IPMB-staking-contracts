@@ -2,8 +2,7 @@
 
 This repo provides information regards to the Price Feed and Staking smart contracts.
 
-
-## Polygon
+## Polygon PoS - Mainnet
 
 *GoldPRO Token (GPRO) - v0.7:* [0xACe7eb41D6BAd44907cdA84A122F052c74cB7826](https://polygonscan.com/address/0xACe7eb41D6BAd44907cdA84A122F052c74cB7826)
 
