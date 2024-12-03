@@ -3,13 +3,13 @@
 This repo provides information regards to the Price Feed and Staking smart contracts.
 
 
-## On Amoy Testnet
+## Polygon
 
-*IPMB Token (IPMBT) - v0.4:* [0xFF22c94FFb6bB5d1DF18bEb5fd1dFE7583D3B214](https://www.oklink.com/amoy/address/0xFF22c94FFb6bB5d1DF18bEb5fd1dFE7583D3B214)
+*GoldPRO Token (GPRO) - v0.7:* [0xACe7eb41D6BAd44907cdA84A122F052c74cB7826](https://polygonscan.com/address/0xACe7eb41D6BAd44907cdA84A122F052c74cB7826)
 
-*Price Feed Contract - v2.2:* [0xB2F7243b6C5f3A3660941BB77bf82D274E664587](https://www.oklink.com/amoy/address/0xB2F7243b6C5f3A3660941BB77bf82D274E664587)
+*Price Feed Contract - v2.3:* [0x82cA437D8cf216fFACea208c3D8B04F0bfDD922D](https://polygonscan.com/address/0x82cA437D8cf216fFACea208c3D8B04F0bfDD922D)
 
-*IPMB Staking Contract - v2.5:* [0xdB886f0a75DFd735118B201C3426a1fA40180e2d](https://amoy.polygonscan.com/address/0xdB886f0a75DFd735118B201C3426a1fA40180e2d)
+*IPMB Staking Contract - v2.6:* [0x97015969398A4f0DeB2021a7FC457a5a3B8B3A93](https://polygonscan.com/address/0x97015969398A4f0DeB2021a7FC457a5a3B8B3A93)
 
 ## Tests
 
