@@ -91,7 +91,7 @@ This repository contains the Solidity smart contract **GPROStaking**, developed 
 
 ## Usage
 
-## Naming scheme for the pools
+### Naming scheme for the pools
 
 ```solidity
 GEM<category>-<duration>-<discount%>-<round> e.g., GEM1-3M-2%-1
