@@ -121,6 +121,14 @@ depositPool(1);
 updateKYCAddressBatch([address1, address2], [true, false]);
 ```
 
+---
+
+## Documenation
+
+[Visit our gitbook](https://ipmb.gitbook.io/contracts)
+
+---
+
 ## Polygon PoS - Mainnet
 
 *GoldPRO Token (GPRO) - v0.7:* [0xACe7eb41D6BAd44907cdA84A122F052c74cB7826](https://polygonscan.com/address/0xACe7eb41D6BAd44907cdA84A122F052c74cB7826)
