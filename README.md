@@ -91,7 +91,7 @@ This repository contains the Solidity smart contract **GPROStaking**, developed 
 
 ## Usage
 
-##Naming scheme for the pools
+## Naming scheme for the pools
 
 ```solidity
 GEM<category>-<duration>-<discount%>-<round> e.g., GEM1-3M-2%-1
@@ -131,7 +131,7 @@ updateKYCAddressBatch([address1, address2], [true, false]);
 
 ## Polygon PoS - Amoy Testnet
 
-*IPMB Token (IPMBT) - v0.4:* [0xFF22c94FFb6bB5d1DF18bEb5fd1dFE7583D3B214](https://www.oklink.com/amoy/address/0xFF22c94FFb6bB5d1DF18bEb5fd1dFE7583D3B214)
+*IPMB Token (IPMBT) - v0.4:* [0xFF22c94FFb6bB5d1DF18bEb5fd1dFE7583D3B214](https://amoy.polygonscan.com/address/0xff22c94ffb6bb5d1df18beb5fd1dfe7583d3b214)
 
 *Price Feed Contract - v2.2:* [0xB2F7243b6C5f3A3660941BB77bf82D274E664587](https://www.oklink.com/amoy/address/0xB2F7243b6C5f3A3660941BB77bf82D274E664587)
 
